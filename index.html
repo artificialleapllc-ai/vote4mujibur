@@ -207,6 +207,57 @@
             margin: 1.5rem auto;
             display: block;
         }
+        .manifesto-section { background: var(--white); }
+        .manifesto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+        .manifesto-card {
+            background: var(--light-gray);
+            border-radius: 14px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        .manifesto-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .manifesto-card h4 {
+            color: var(--dark-green);
+            margin-bottom: 0.6rem;
+        }
+        .manifesto-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .manifesto-btn {
+            display: inline-block;
+            padding: 0.7rem 1.4rem;
+            border-radius: 999px;
+            background: var(--green);
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .manifesto-btn.secondary {
+            background: transparent;
+            color: var(--green);
+            border: 2px solid var(--green);
+        }
+        .manifesto-btn:hover {
+            transform: translateY(-2px);
+        }
+        .manifesto-section .bn-content { display: block; }
+        .manifesto-section .en-content { display: none; }
+        body.lang-en .manifesto-section .bn-content { display: none; }
+        body.lang-en .manifesto-section .en-content { display: block; }
+
         .cta-button {
             display: inline-block;
             padding: 1rem 2.5rem;
@@ -934,6 +985,41 @@
         
         <a href="#opinion" class="cta-button bn-content">আপনার মতামত দিন</a>
         <a href="#opinion" class="cta-button en-content">Share Your Opinion</a>
+    </section>
+
+    <!-- Manifesto Section -->
+    <section class="manifesto-section">
+        <div class="container">
+            <h2 class="section-title bn-content">ইশতেহার</h2>
+            <h2 class="section-title en-content">Manifesto</h2>
+            <p class="section-lead bn-content">রাজশাহী-১ এর জন্য আমাদের পরিকল্পনা ও প্রতিশ্রুতি।</p>
+            <p class="section-lead en-content">Our plans and commitments for Rajshahi-1.</p>
+
+            <div class="manifesto-grid">
+                <div class="manifesto-card">
+                    <div class="manifesto-icon">📘</div>
+                    <h4 class="bn-content">ইশতেহার (বাংলা)</h4>
+                    <h4 class="en-content">Manifesto (Bangla)</h4>
+                    <div class="manifesto-actions">
+                        <a class="manifesto-btn bn-content" href="Manifesto_bangla.pdf" target="_blank">দেখুন</a>
+                        <a class="manifesto-btn en-content" href="Manifesto_bangla.pdf" target="_blank">View</a>
+                        <a class="manifesto-btn secondary bn-content" href="Manifesto_bangla.pdf" download>ডাউনলোড</a>
+                        <a class="manifesto-btn secondary en-content" href="Manifesto_bangla.pdf" download>Download</a>
+                    </div>
+                </div>
+                <div class="manifesto-card">
+                    <div class="manifesto-icon">📗</div>
+                    <h4 class="bn-content">ম্যানিফেস্টো বুকলেট (ইংরেজি)</h4>
+                    <h4 class="en-content">Manifesto Booklet (English)</h4>
+                    <div class="manifesto-actions">
+                        <a class="manifesto-btn bn-content" href="Manifesto_booklet_en.pdf" target="_blank">দেখুন</a>
+                        <a class="manifesto-btn en-content" href="Manifesto_booklet_en.pdf" target="_blank">View</a>
+                        <a class="manifesto-btn secondary bn-content" href="Manifesto_booklet_en.pdf" download>ডাউনলোড</a>
+                        <a class="manifesto-btn secondary en-content" href="Manifesto_booklet_en.pdf" download>Download</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- About Section -->
