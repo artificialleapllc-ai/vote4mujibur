@@ -185,6 +185,59 @@
             position: relative;
             z-index: 1;
         }
+.top-banner {
+            margin-top: 60px;
+            position: relative;
+            height: 60vh;
+            min-height: 320px;
+            max-height: 500px;
+            overflow: hidden;
+        }
+        .top-banner-slider {
+            position: absolute;
+            inset: 0;
+        }
+        .top-banner-slide {
+            position: absolute;
+            inset: 0;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #ffffff;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+        }
+        .top-banner-slide.active {
+            opacity: 1;
+        }
+        .top-banner::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.35));
+        }
+        .top-banner-dots {
+            position: absolute;
+            left: 50%;
+            bottom: 16px;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 2;
+        }
+        .top-banner-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor: pointer;
+        }
+        .top-banner-dot.active {
+            background: #FFD166;
+            border-color: #FFD166;
+        }
+
         @keyframes heroFloat {
             0% { transform: scale(1.05) translateY(0); }
             50% { transform: scale(1.1) translateY(-8px); }
@@ -979,6 +1032,21 @@
         </nav>
     </header>
 
+    <!-- Top Banner Slider -->
+    <section class="top-banner">
+        <div class="top-banner-slider" id="topBannerSlider">
+            <div class="top-banner-slide active" style="background-image: url('istehar_1.jpg');"></div>
+            <div class="top-banner-slide" style="background-image: url('istehar_2.jpg');"></div>
+            <div class="top-banner-slide" style="background-image: url('istehar_3.jpg');"></div>
+            <div class="top-banner-slide" style="background-image: url('istehar_4.jpg');"></div>
+            <div class="top-banner-slide" style="background-image: url('istehar_5.jpg');"></div>
+            <div class="top-banner-slide" style="background-image: url('istehar_6.jpg');"></div>
+            <div class="top-banner-slide" style="background-image: url('istehar_7.jpg');"></div>
+        </div>
+        <div class="top-banner-dots" id="topBannerDots"></div>
+    </section>
+
+
     <!-- Hero Section -->
     <section class="hero">
         <h1 class="bn-content">প্রফেসর মুজিবুর রহমান</h1>
@@ -1611,7 +1679,54 @@
             }
         });
 
-        // Mobile nav: close on link click or ESC
+                // Top banner slider
+        const topSlides = document.querySelectorAll('.top-banner-slide');
+        const topDots = document.getElementById('topBannerDots');
+        let topIndex = 0;
+        let topTimer = null;
+
+        const setTopActive = (index) => {
+            topSlides.forEach((s) => s.classList.remove('active'));
+            if (topDots) {
+                topDots.querySelectorAll('.top-banner-dot').forEach((d) => d.classList.remove('active'));
+            }
+            topSlides[index].classList.add('active');
+            if (topDots) {
+                const dots = topDots.querySelectorAll('.top-banner-dot');
+                if (dots[index]) dots[index].classList.add('active');
+            }
+        };
+
+        if (topDots && topSlides.length) {
+            topSlides.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'top-banner-dot' + (i === 0 ? ' active' : '');
+                dot.addEventListener('click', () => {
+                    topIndex = i;
+                    setTopActive(topIndex);
+                    if (topTimer) {
+                        clearInterval(topTimer);
+                        startTopTimer();
+                    }
+                });
+                topDots.appendChild(dot);
+            });
+        }
+
+        const startTopTimer = () => {
+            if (topSlides.length > 1) {
+                topTimer = setInterval(() => {
+                    topIndex = (topIndex + 1) % topSlides.length;
+                    setTopActive(topIndex);
+                }, 3500);
+            }
+        };
+
+        setTopActive(topIndex);
+        startTopTimer();
+
+// Mobile nav: close on link click or ESC
         const navToggle = document.getElementById('navToggle');
         if (navToggle) {
             let navAutoCloseTimer = null;
