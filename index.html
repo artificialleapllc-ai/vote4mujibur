@@ -374,6 +374,50 @@
             border-right: 1px solid #e0e0e0;
         }
         .result-table td:last-child { border-right: none; }
+        .result-summary {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.5rem;
+        }
+        .summary-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            padding: 1.2rem 1.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center;
+            text-align: center;
+        }
+        .summary-title { font-weight: 700; color: var(--dark-green); font-size: 1.15rem; }
+        .summary-value { font-size: 2.35rem; font-weight: 800; color: #0b5f34; }
+        .summary-sub { color: #555; font-size: 0.95rem; }
+        .summary-symbol {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: #f3f6f4;
+            border: 2px solid #e0e0e0;
+            font-size: 1.6rem;
+            overflow: hidden;
+        }
+        .summary-symbol img { width: 44px; height: 44px; object-fit: contain; }
+        .summary-symbol.bnp-symbol {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #0b5f34;
+            line-height: 1.1;
+            padding: 0.2rem;
+        }
+        .summary-symbol.bnp-symbol span { display: block; text-align: center; }
+        .summary-lead { font-size: 1.2rem; font-weight: 700; color: #8B0000; }
+        @media (max-width: 900px) {
+            .result-summary { grid-template-columns: 1fr; }
+        }
         .result-table tbody tr:nth-child(even) { background: #f7fbf9; }
         .result-table tbody tr:hover { background: #eef7f2; }
         .result-table tbody td:first-child,
@@ -1198,140 +1242,8 @@
     <!-- Vercel Web Analytics -->
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-            // Result table from Google Sheet (Apps Script JSON)
-        (function loadResultTable() {
-            const DATA_URL = 'https://script.google.com/macros/s/AKfycbzyuDaZXmwFL-CGcpfDEfW19O3WR1E11at8Ht3SqrldbMGaM-pWsd3WYKQnAqEfrW1C/exec';
-            const table = document.getElementById('resultTable');
-            if (!table) return;
-            const tbody = table.querySelector('tbody');
-
-            const renderRows = (rows) => {
-                tbody.innerHTML = '';
-                if (!Array.isArray(rows) || rows.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="13">ডেটা নেই</td></tr>';
-                    return;
-                }
-                rows.forEach((row) => {
-                    const get = (k) => (row && row[k] !== undefined && row[k] !== null && row[k] !== '') ? row[k] : '০';
-                    const tr = document.createElement('tr');
-                    const cells = [
-                        get('ক্রমিক নং'),
-                        get('উপজেলার নাম'),
-                        get('মোট ভোটার'),
-                        get('ট্রাক'),
-                        get('ঈগল'),
-                        get('মোবাইল'),
-                        get('দাঁড়িপাল্লা'),
-                        get('ধানের শীষ'),
-                        get('বৈধ ভোট'),
-                        get('অবৈধ ভোট'),
-                        get('সর্বমোট'),
-                        get('শতকরা হার'),
-                        get('কেন্দ্র')
-                    ];
-                    cells.forEach((c) => {
-                        const td = document.createElement('td');
-                        td.textContent = c;
-                        tr.appendChild(td);
-                    });
-                    tbody.appendChild(tr);
-                });
-            };
-
-            // Cache for faster initial render
-            try {
-                const cached = localStorage.getItem('resultTableCache');
-                if (cached) {
-                    const parsed = JSON.parse(cached);
-                    if (parsed && Array.isArray(parsed.rows) && parsed.ts && (Date.now() - parsed.ts) < 120000) {
-                        renderRows(parsed.rows);
-                    }
-                }
-            } catch (_) {}
-
-            fetch(DATA_URL, { cache: 'no-store' })
-                .then((r) => r.json())
-                .then((rows) => {
-                    renderRows(rows);
-                    try {
-                        localStorage.setItem('resultTableCache', JSON.stringify({ rows, ts: Date.now() }));
-                    } catch (_) {}
-                })
-                .catch(() => {
-                    if (!tbody.children.length) {
-                        tbody.innerHTML = '<tr><td colspan="13">ডেটা লোড হয়নি</td></tr>';
-                    }
-                });
-        })();
-
     </script>
-    <script defer src="/_vercel/insights/script.js">        // Result table from Google Sheet (Apps Script JSON)
-        (function loadResultTable() {
-            const DATA_URL = 'https://script.google.com/macros/s/AKfycbzyuDaZXmwFL-CGcpfDEfW19O3WR1E11at8Ht3SqrldbMGaM-pWsd3WYKQnAqEfrW1C/exec';
-            const table = document.getElementById('resultTable');
-            if (!table) return;
-            const tbody = table.querySelector('tbody');
-
-            const renderRows = (rows) => {
-                tbody.innerHTML = '';
-                if (!Array.isArray(rows) || rows.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="13">ডেটা নেই</td></tr>';
-                    return;
-                }
-                rows.forEach((row) => {
-                    const get = (k) => (row && row[k] !== undefined && row[k] !== null && row[k] !== '') ? row[k] : '০';
-                    const tr = document.createElement('tr');
-                    const cells = [
-                        get('ক্রমিক নং'),
-                        get('উপজেলার নাম'),
-                        get('মোট ভোটার'),
-                        get('ট্রাক'),
-                        get('ঈগল'),
-                        get('মোবাইল'),
-                        get('দাঁড়িপাল্লা'),
-                        get('ধানের শীষ'),
-                        get('বৈধ ভোট'),
-                        get('অবৈধ ভোট'),
-                        get('সর্বমোট'),
-                        get('শতকরা হার'),
-                        get('কেন্দ্র')
-                    ];
-                    cells.forEach((c) => {
-                        const td = document.createElement('td');
-                        td.textContent = c;
-                        tr.appendChild(td);
-                    });
-                    tbody.appendChild(tr);
-                });
-            };
-
-            // Cache for faster initial render
-            try {
-                const cached = localStorage.getItem('resultTableCache');
-                if (cached) {
-                    const parsed = JSON.parse(cached);
-                    if (parsed && Array.isArray(parsed.rows) && parsed.ts && (Date.now() - parsed.ts) < 120000) {
-                        renderRows(parsed.rows);
-                    }
-                }
-            } catch (_) {}
-
-            fetch(DATA_URL, { cache: 'no-store' })
-                .then((r) => r.json())
-                .then((rows) => {
-                    renderRows(rows);
-                    try {
-                        localStorage.setItem('resultTableCache', JSON.stringify({ rows, ts: Date.now() }));
-                    } catch (_) {}
-                })
-                .catch(() => {
-                    if (!tbody.children.length) {
-                        tbody.innerHTML = '<tr><td colspan="13">ডেটা লোড হয়নি</td></tr>';
-                    }
-                });
-        })();
-
-    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
     <!-- Language Toggle -->
@@ -1399,6 +1311,27 @@
     <section class="result-ticker-section">
         <div class="container">
             <h2 class="section-title bn-content">এক নজরে রাজশাহী-১ আসন</h2>
+            <div class="result-summary">
+                <div class="summary-card">
+                    <div class="summary-symbol"><img src="দাঁড়িপাল্লায় ভোট দিন.png" alt="দাঁড়িপাল্লা"></div>
+                    <div class="summary-title">জামায়াত (দাঁড়িপাল্লা)</div>
+                    <div class="summary-value" id="jamatTotal">০</div>
+                    <div class="summary-sub">মোট ভোট</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-symbol bnp-symbol"><span>ধানের শীষ</span></div>
+                    <div class="summary-title">বিএনপি (ধানের শীষ)</div>
+                    <div class="summary-value" id="bnpTotal">০</div>
+                    <div class="summary-sub">মোট ভোট</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">মোট কেন্দ্র</div>
+                    <div class="summary-value">159</div>
+                    <div class="summary-sub">আপডেট কেন্দ্র: <span id="centerUpdated">০</span></div>
+                    <div class="summary-sub">মোট ভোট: <span id="totalVotes">০</span></div>
+                    <div class="summary-lead" id="leadText">লিডার: —</div>
+                </div>
+            </div>
             <div class="result-table-wrapper">
                 <table class="result-table" id="resultTable">
                     <thead>
@@ -2339,28 +2272,59 @@
             const tbody = table.querySelector('tbody');
 
             const renderRows = (rows) => {
+                const jamatTotalEl = document.getElementById('jamatTotal');
+                const bnpTotalEl = document.getElementById('bnpTotal');
+                const centerUpdatedEl = document.getElementById('centerUpdated');
+                const totalVotesEl = document.getElementById('totalVotes');
+                const leadTextEl = document.getElementById('leadText');
                 tbody.innerHTML = '';
                 if (!Array.isArray(rows) || rows.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="13">ডেটা নেই</td></tr>';
                     return;
                 }
+                let jamatSum = 0;
+                let bnpSum = 0;
+                let maxCenter = 0;
+                let totalVotes = 0;
+                let totalRow = null;
+                const getValue = (row, k) => (row && row[k] !== undefined && row[k] !== null && row[k] !== '') ? row[k] : '০';
+                const toNum = (v) => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
+
                 rows.forEach((row) => {
-                    const get = (k) => (row && row[k] !== undefined && row[k] !== null && row[k] !== '') ? row[k] : '০';
+                    const rowName = String(getValue(row, 'উপজেলার নাম')).trim();
+                    const serialVal = String(getValue(row, 'ক্রমিক নং')).trim();
+                    const normalizedName = rowName.replace(/[\s\u00A0]+/g, '');
+                    const isTotalRow =
+                        normalizedName === 'মোট' ||
+                        normalizedName.toLowerCase() === 'total' ||
+                        normalizedName.includes('মোট') ||
+                        (serialVal === '' && toNum(getValue(row, 'সর্বমোট')) > 0);
+                    if (isTotalRow) totalRow = row;
+
+                    if (!isTotalRow) {
+                        jamatSum += toNum(getValue(row, 'দাঁড়িপাল্লা'));
+                        bnpSum += toNum(getValue(row, 'ধানের শীষ'));
+                        totalVotes += toNum(getValue(row, 'সর্বমোট'));
+                    }
+
+                    const c = toNum(getValue(row, 'কেন্দ্র'));
+                    if (c) maxCenter = Math.max(maxCenter, c);
+
                     const tr = document.createElement('tr');
                     const cells = [
-                        get('ক্রমিক নং'),
-                        get('উপজেলার নাম'),
-                        get('মোট ভোটার'),
-                        get('ট্রাক'),
-                        get('ঈগল'),
-                        get('মোবাইল'),
-                        get('দাঁড়িপাল্লা'),
-                        get('ধানের শীষ'),
-                        get('বৈধ ভোট'),
-                        get('অবৈধ ভোট'),
-                        get('সর্বমোট'),
-                        get('শতকরা হার'),
-                        get('কেন্দ্র')
+                        getValue(row, 'ক্রমিক নং'),
+                        getValue(row, 'উপজেলার নাম'),
+                        getValue(row, 'মোট ভোটার'),
+                        getValue(row, 'ট্রাক'),
+                        getValue(row, 'ঈগল'),
+                        getValue(row, 'মোবাইল'),
+                        getValue(row, 'দাঁড়িপাল্লা'),
+                        getValue(row, 'ধানের শীষ'),
+                        getValue(row, 'বৈধ ভোট'),
+                        getValue(row, 'অবৈধ ভোট'),
+                        getValue(row, 'সর্বমোট'),
+                        getValue(row, 'শতকরা হার'),
+                        getValue(row, 'কেন্দ্র')
                     ];
                     cells.forEach((c) => {
                         const td = document.createElement('td');
@@ -2369,11 +2333,33 @@
                     });
                     tbody.appendChild(tr);
                 });
+
+                if (totalRow) {
+                    const totalJamat = toNum(getValue(totalRow, 'দাঁড়িপাল্লা'));
+                    const totalBnp = toNum(getValue(totalRow, 'ধানের শীষ'));
+                    if (totalJamat || totalBnp) {
+                        jamatSum = totalJamat;
+                        bnpSum = totalBnp;
+                    }
+                    const totalAll = toNum(getValue(totalRow, 'সর্বমোট'));
+                    if (totalAll) totalVotes = totalAll;
+                }
+
+                const centerUpdated = totalRow ? toNum(getValue(totalRow, 'কেন্দ্র')) : maxCenter;
+                if (jamatTotalEl) jamatTotalEl.textContent = jamatSum.toLocaleString('bn-BD');
+                if (bnpTotalEl) bnpTotalEl.textContent = bnpSum.toLocaleString('bn-BD');
+                if (centerUpdatedEl) centerUpdatedEl.textContent = centerUpdated.toLocaleString('bn-BD');
+                if (totalVotesEl) totalVotesEl.textContent = totalVotes.toLocaleString('bn-BD');
+                if (leadTextEl) {
+                    if (jamatSum > bnpSum) leadTextEl.textContent = 'লিডার: জামায়াত +' + (jamatSum - bnpSum).toLocaleString('bn-BD');
+                    else if (bnpSum > jamatSum) leadTextEl.textContent = 'লিডার: বিএনপি +' + (bnpSum - jamatSum).toLocaleString('bn-BD');
+                    else leadTextEl.textContent = 'লিডার: সমান';
+                }
             };
 
             // Cache for faster initial render
             try {
-                const cached = localStorage.getItem('resultTableCache');
+                const cached = localStorage.getItem('resultTableCache_v2');
                 if (cached) {
                     const parsed = JSON.parse(cached);
                     if (parsed && Array.isArray(parsed.rows) && parsed.ts && (Date.now() - parsed.ts) < 120000) {
@@ -2387,7 +2373,7 @@
                 .then((rows) => {
                     renderRows(rows);
                     try {
-                        localStorage.setItem('resultTableCache', JSON.stringify({ rows, ts: Date.now() }));
+                        localStorage.setItem('resultTableCache_v2', JSON.stringify({ rows, ts: Date.now() }));
                     } catch (_) {}
                 })
                 .catch(() => {
