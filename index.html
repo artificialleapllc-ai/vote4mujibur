@@ -238,54 +238,7 @@
             border-color: #FFD166;
         }
 
-        .result-ticker-section { background: var(--light-gray); padding: 30px 2rem 10px; }
-        .result-ticker-title { text-align: center; font-size: 1.6rem; color: var(--dark-green); margin-bottom: 1rem; }
-        .result-ticker {
-            background: #0b5f34;
-            color: #ff9800;
-            padding: 3.6rem 3.8rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 3.6rem;
-            overflow: hidden;
-            position: relative;
-            border: 2px solid #FFD166;
-            box-shadow: none;
-        }
-        .result-ticker-track {
-            display: inline-flex;
-            gap: 2.5rem;
-            white-space: nowrap;
-            flex-shrink: 0;
-            animation: resultTicker 90s linear infinite;
-        }
-        .result-ticker-inner {
-            display: inline-flex;
-            gap: 2.5rem;
-            width: max-content;
-        }
-        .result-ticker-item {
-            display: inline-flex;
-            gap: 1.2rem;
-            align-items: center;
-        }
-        .result-pill {
-            background: rgba(255,255,255,0.12);
-            padding: 0.25rem 0.7rem;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        @keyframes resultTicker {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        @media (max-width: 768px) {
-            .result-ticker {
-                padding: 1.4rem 1.4rem;
-                font-size: 1.4rem;
-                border-radius: 8px;
-            }
-            .result-ticker-item {
+                    .result-ticker-item {
                 gap: 0.8rem;
             }
             .result-pill {
@@ -388,6 +341,51 @@
         .manifesto-section .en-content { display: none; }
         body.lang-en .manifesto-section .bn-content { display: none; }
         body.lang-en .manifesto-section .en-content { display: block; }
+        .result-table-wrapper {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            overflow: auto;
+            height: 720px;
+            display: flex;
+            justify-content: center;
+        }
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1100px;
+            font-size: 1.6rem;
+        }
+        .result-table thead th {
+            position: sticky;
+            top: 0;
+            background: #0b5f34;
+            color: #fff;
+            padding: 0.8rem;
+            text-align: center;
+            border-bottom: 2px solid #FFD166;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        .result-table thead th:last-child { border-right: none; }
+        .result-table td {
+            padding: 0.7rem 0.6rem;
+            text-align: center;
+            border-bottom: 1px solid #e6e6e6;
+            border-right: 1px solid #e0e0e0;
+        }
+        .result-table td:last-child { border-right: none; }
+        .result-table tbody tr:nth-child(even) { background: #f7fbf9; }
+        .result-table tbody tr:hover { background: #eef7f2; }
+        .result-table tbody td:first-child,
+        .result-table thead th:first-child {
+            font-weight: 700;
+        }
+        @media (max-width: 768px) {
+            .result-table {
+                font-size: 0.9rem;
+                min-width: 900px;
+            }
+        }
         .vote-update { background: var(--light-gray); }
         .vote-grid {
             display: grid;
@@ -1200,8 +1198,140 @@
     <!-- Vercel Web Analytics -->
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+            // Result table from Google Sheet (Apps Script JSON)
+        (function loadResultTable() {
+            const DATA_URL = 'https://script.google.com/macros/s/AKfycbzyuDaZXmwFL-CGcpfDEfW19O3WR1E11at8Ht3SqrldbMGaM-pWsd3WYKQnAqEfrW1C/exec';
+            const table = document.getElementById('resultTable');
+            if (!table) return;
+            const tbody = table.querySelector('tbody');
+
+            const renderRows = (rows) => {
+                tbody.innerHTML = '';
+                if (!Array.isArray(rows) || rows.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="13">ডেটা নেই</td></tr>';
+                    return;
+                }
+                rows.forEach((row) => {
+                    const get = (k) => (row && row[k] !== undefined && row[k] !== null && row[k] !== '') ? row[k] : '০';
+                    const tr = document.createElement('tr');
+                    const cells = [
+                        get('ক্রমিক নং'),
+                        get('উপজেলার নাম'),
+                        get('মোট ভোটার'),
+                        get('ট্রাক'),
+                        get('ঈগল'),
+                        get('মোবাইল'),
+                        get('দাঁড়িপাল্লা'),
+                        get('ধানের শীষ'),
+                        get('বৈধ ভোট'),
+                        get('অবৈধ ভোট'),
+                        get('সর্বমোট'),
+                        get('শতকরা হার'),
+                        get('কেন্দ্র')
+                    ];
+                    cells.forEach((c) => {
+                        const td = document.createElement('td');
+                        td.textContent = c;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+            };
+
+            // Cache for faster initial render
+            try {
+                const cached = localStorage.getItem('resultTableCache');
+                if (cached) {
+                    const parsed = JSON.parse(cached);
+                    if (parsed && Array.isArray(parsed.rows) && parsed.ts && (Date.now() - parsed.ts) < 120000) {
+                        renderRows(parsed.rows);
+                    }
+                }
+            } catch (_) {}
+
+            fetch(DATA_URL, { cache: 'no-store' })
+                .then((r) => r.json())
+                .then((rows) => {
+                    renderRows(rows);
+                    try {
+                        localStorage.setItem('resultTableCache', JSON.stringify({ rows, ts: Date.now() }));
+                    } catch (_) {}
+                })
+                .catch(() => {
+                    if (!tbody.children.length) {
+                        tbody.innerHTML = '<tr><td colspan="13">ডেটা লোড হয়নি</td></tr>';
+                    }
+                });
+        })();
+
     </script>
-    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/insights/script.js">        // Result table from Google Sheet (Apps Script JSON)
+        (function loadResultTable() {
+            const DATA_URL = 'https://script.google.com/macros/s/AKfycbzyuDaZXmwFL-CGcpfDEfW19O3WR1E11at8Ht3SqrldbMGaM-pWsd3WYKQnAqEfrW1C/exec';
+            const table = document.getElementById('resultTable');
+            if (!table) return;
+            const tbody = table.querySelector('tbody');
+
+            const renderRows = (rows) => {
+                tbody.innerHTML = '';
+                if (!Array.isArray(rows) || rows.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="13">ডেটা নেই</td></tr>';
+                    return;
+                }
+                rows.forEach((row) => {
+                    const get = (k) => (row && row[k] !== undefined && row[k] !== null && row[k] !== '') ? row[k] : '০';
+                    const tr = document.createElement('tr');
+                    const cells = [
+                        get('ক্রমিক নং'),
+                        get('উপজেলার নাম'),
+                        get('মোট ভোটার'),
+                        get('ট্রাক'),
+                        get('ঈগল'),
+                        get('মোবাইল'),
+                        get('দাঁড়িপাল্লা'),
+                        get('ধানের শীষ'),
+                        get('বৈধ ভোট'),
+                        get('অবৈধ ভোট'),
+                        get('সর্বমোট'),
+                        get('শতকরা হার'),
+                        get('কেন্দ্র')
+                    ];
+                    cells.forEach((c) => {
+                        const td = document.createElement('td');
+                        td.textContent = c;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+            };
+
+            // Cache for faster initial render
+            try {
+                const cached = localStorage.getItem('resultTableCache');
+                if (cached) {
+                    const parsed = JSON.parse(cached);
+                    if (parsed && Array.isArray(parsed.rows) && parsed.ts && (Date.now() - parsed.ts) < 120000) {
+                        renderRows(parsed.rows);
+                    }
+                }
+            } catch (_) {}
+
+            fetch(DATA_URL, { cache: 'no-store' })
+                .then((r) => r.json())
+                .then((rows) => {
+                    renderRows(rows);
+                    try {
+                        localStorage.setItem('resultTableCache', JSON.stringify({ rows, ts: Date.now() }));
+                    } catch (_) {}
+                })
+                .catch(() => {
+                    if (!tbody.children.length) {
+                        tbody.innerHTML = '<tr><td colspan="13">ডেটা লোড হয়নি</td></tr>';
+                    }
+                });
+        })();
+
+    </script>
 </head>
 <body>
     <!-- Language Toggle -->
@@ -1268,16 +1398,30 @@
         <!-- Result Ticker Section -->
     <section class="result-ticker-section">
         <div class="container">
-            <div class="result-ticker-title bn-content">এক নজরে রাজশাহী-১ আসন</div>
-            <div class="result-ticker">
-                <div class="result-ticker-inner" id="resultTickerInner">
-                    <div class="result-ticker-track" id="resultTickerTrack">
-                    <div class="result-ticker-item bn-content">
-                        <span class="result-pill">ডেটা লোড হচ্ছে...</span>
-                    </div>
-                </div>
-                    <div class="result-ticker-track" id="resultTickerTrackClone"></div>
-                </div>
+            <h2 class="section-title bn-content">এক নজরে রাজশাহী-১ আসন</h2>
+            <div class="result-table-wrapper">
+                <table class="result-table" id="resultTable">
+                    <thead>
+                        <tr>
+                            <th>ক্রমিক নং</th>
+                            <th>উপজেলার নাম</th>
+                            <th>মোট ভোটার</th>
+                            <th>ট্রাক</th>
+                            <th>ঈগল</th>
+                            <th>মোবাইল</th>
+                            <th>দাঁড়িপাল্লা</th>
+                            <th>ধানের শীষ</th>
+                            <th>বৈধ ভোট</th>
+                            <th>অবৈধ ভোট</th>
+                            <th>সর্বমোট</th>
+                            <th>শতকরা হার</th>
+                            <th>কেন্দ্র</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="13">ডেটা লোড হচ্ছে...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>
@@ -2033,69 +2177,7 @@
             });
         }
 
-        // Result ticker from Google Sheet (Apps Script JSON)
-        (function loadResultTicker() {
-            const DATA_URL = 'https://script.google.com/macros/s/AKfycbzyuDaZXmwFL-CGcpfDEfW19O3WR1E11at8Ht3SqrldbMGaM-pWsd3WYKQnAqEfrW1C/exec';
-            const track = document.getElementById('resultTickerTrack');
-            const trackClone = document.getElementById('resultTickerTrackClone');
-            if (!track || !trackClone) return;
-
-            const buildItem = (label, parts) => {
-                const div = document.createElement('div');
-                div.className = 'result-ticker-item bn-content';
-                const pill = document.createElement('span');
-                pill.className = 'result-pill';
-                pill.textContent = label;
-                div.appendChild(pill);
-                parts.forEach((p) => {
-                    const span = document.createElement('span');
-                    span.textContent = p;
-                    div.appendChild(span);
-                });
-                return div;
-            };
-
-            fetch(DATA_URL)
-                .then((r) => r.json())
-                .then((rows) => {
-                    track.innerHTML = '';
-                    trackClone.innerHTML = '';
-                    if (!Array.isArray(rows) || rows.length === 0) {
-                        track.appendChild(buildItem('ডেটা নেই', ['শিগগিরই আপডেট হবে']));
-                    trackClone.appendChild(track.firstElementChild.cloneNode(true));
-                        return;
-                    }
-
-                    // Header row
-                    track.appendChild(buildItem('ক্রমিক নং', [
-                        'উপজেলার নাম', 'মোট ভোটার',
-                        'প্রতীক: ট্রাক • ঈগল • মোবাইল • দাঁড়িপাল্লা • ধানের শীষ',
-                        'ভোট: বৈধ • অবৈধ • সর্বমোট',
-                        'শতকরা হার', 'কেন্দ্র'
-                    ]));
-
-                    rows.forEach((row) => {
-                        const get = (k) => (row && row[k] !== undefined && row[k] !== null) ? String(row[k]) : '০';
-                        const label = get('ক্রমিক নং') || get('উপজেলার নাম') || '—';
-                        const parts = [
-                            `উপজেলা: ${get('উপজেলার নাম')}`,
-                            `মোট ভোটার: ${get('মোট ভোটার')}`,
-                            `ট্রাক: ${get('ট্রাক')} • ঈগল: ${get('ঈগল')} • মোবাইল: ${get('মোবাইল')} • দাঁড়িপাল্লা: ${get('দাঁড়িপাল্লা')} • ধানের শীষ: ${get('ধানের শীষ')}`,
-                            `বৈধ ভোট: ${get('বৈধ ভোট')} • অবৈধ ভোট: ${get('অবৈধ ভোট')} • সর্বমোট: ${get('সর্বমোট')}`,
-                            `শতকরা হার: ${get('শতকরা হার')}`,
-                            `কেন্দ্র: ${get('কেন্দ্র')}`
-                        ];
-                        track.appendChild(buildItem(label, parts));
-                    });
-                    trackClone.innerHTML = track.innerHTML;
-                })
-                .catch(() => {
-                    track.innerHTML = '';
-                    trackClone.innerHTML = '';
-                    track.appendChild(buildItem('ডেটা লোড হয়নি', ['ইন্টারনেট সংযোগ পরীক্ষা করুন']));
-                    trackClone.appendChild(track.firstElementChild.cloneNode(true));
-                });
-        })();
+        
 
         // Emergency popup on page load
         const emergencyPopup = document.getElementById('emergencyPopup');
@@ -2249,6 +2331,72 @@
                 alert('দুঃখিত, মতামত পাঠানো যায়নি। আবার চেষ্টা করুন।');
             }
         });
+            // Result table from Google Sheet (Apps Script JSON)
+        (function loadResultTable() {
+            const DATA_URL = 'https://script.google.com/macros/s/AKfycbzyuDaZXmwFL-CGcpfDEfW19O3WR1E11at8Ht3SqrldbMGaM-pWsd3WYKQnAqEfrW1C/exec';
+            const table = document.getElementById('resultTable');
+            if (!table) return;
+            const tbody = table.querySelector('tbody');
+
+            const renderRows = (rows) => {
+                tbody.innerHTML = '';
+                if (!Array.isArray(rows) || rows.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="13">ডেটা নেই</td></tr>';
+                    return;
+                }
+                rows.forEach((row) => {
+                    const get = (k) => (row && row[k] !== undefined && row[k] !== null && row[k] !== '') ? row[k] : '০';
+                    const tr = document.createElement('tr');
+                    const cells = [
+                        get('ক্রমিক নং'),
+                        get('উপজেলার নাম'),
+                        get('মোট ভোটার'),
+                        get('ট্রাক'),
+                        get('ঈগল'),
+                        get('মোবাইল'),
+                        get('দাঁড়িপাল্লা'),
+                        get('ধানের শীষ'),
+                        get('বৈধ ভোট'),
+                        get('অবৈধ ভোট'),
+                        get('সর্বমোট'),
+                        get('শতকরা হার'),
+                        get('কেন্দ্র')
+                    ];
+                    cells.forEach((c) => {
+                        const td = document.createElement('td');
+                        td.textContent = c;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+            };
+
+            // Cache for faster initial render
+            try {
+                const cached = localStorage.getItem('resultTableCache');
+                if (cached) {
+                    const parsed = JSON.parse(cached);
+                    if (parsed && Array.isArray(parsed.rows) && parsed.ts && (Date.now() - parsed.ts) < 120000) {
+                        renderRows(parsed.rows);
+                    }
+                }
+            } catch (_) {}
+
+            fetch(DATA_URL, { cache: 'no-store' })
+                .then((r) => r.json())
+                .then((rows) => {
+                    renderRows(rows);
+                    try {
+                        localStorage.setItem('resultTableCache', JSON.stringify({ rows, ts: Date.now() }));
+                    } catch (_) {}
+                })
+                .catch(() => {
+                    if (!tbody.children.length) {
+                        tbody.innerHTML = '<tr><td colspan="13">ডেটা লোড হয়নি</td></tr>';
+                    }
+                });
+        })();
+
     </script>
 </body>
 </html>
