@@ -317,7 +317,7 @@
         .vote-update { background: var(--light-gray); }
         .vote-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 2rem;
         }
         .vote-card {
@@ -325,6 +325,7 @@
             border-radius: 14px;
             overflow: hidden;
             box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .vote-card img {
             width: 100%;
@@ -332,6 +333,14 @@
             object-fit: cover;
             display: block;
             cursor: pointer;
+            transition: transform 0.35s ease;
+        }
+        .vote-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 14px 28px rgba(0,0,0,0.2);
+        }
+        .vote-card:hover img {
+            transform: scale(1.04);
         }
         .vote-caption {
             padding: 0.9rem 1rem;
@@ -349,25 +358,27 @@
         }
         .vote-modal.active { display: flex; }
         .vote-modal-content {
-            max-width: 90vw;
-            max-height: 85vh;
-            background: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+            max-width: 96vw;
+            max-height: 96vh;
+            background: transparent;
+            border-radius: 0;
+            overflow: visible;
+            box-shadow: none;
         }
         .vote-modal-content img {
             display: block;
-            max-width: 90vw;
-            max-height: 70vh;
+            max-width: 96vw;
+            max-height: 96vh;
             width: auto;
             height: auto;
         }
         .vote-modal-caption {
-            padding: 0.9rem 1rem;
+            margin-top: 0.6rem;
+            padding: 0.6rem 0.9rem;
             font-weight: 600;
-            color: #2c3e50;
-            background: #f7f7f7;
+            color: #fff;
+            background: rgba(0,0,0,0.6);
+            border-radius: 10px;
         }
         .popup-modal {
             position: fixed;
@@ -431,6 +442,12 @@
         @keyframes ticker {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
+        }
+        @media (max-width: 1024px) {
+            .vote-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 600px) {
+            .vote-grid { grid-template-columns: 1fr; }
         }
 
         .cta-button {
@@ -1201,7 +1218,13 @@
             <p class="section-lead en-content">See the latest updates and moments from election day.</p>
 
             <div class="vote-grid">
+                <div class="vote-card"><img src="emergency_contact.JPG" alt="Emergency Contact" data-caption-bn="জরুরি যোগাযোগ" data-caption-en="Emergency Contact"><div class="vote-caption bn-content">জরুরি যোগাযোগ</div><div class="vote-caption en-content">Emergency Contact</div></div>
                 <div class="vote-card"><img src="vote_1.jpg" alt="Vote Day Moment 1" data-caption-bn="ভোট দিবসের মুহূর্ত ১" data-caption-en="Vote Day Moment 1"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ১</div><div class="vote-caption en-content">Vote Day Moment 1</div></div>
+                <div class="vote-card"><img src="vote_2.jpg" alt="Vote Day Moment 2" data-caption-bn="ভোট দিবসের মুহূর্ত ২" data-caption-en="Vote Day Moment 2"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ২</div><div class="vote-caption en-content">Vote Day Moment 2</div></div>
+                <div class="vote-card"><img src="vote_3.jpg" alt="Vote Day Moment 3" data-caption-bn="ভোট দিবসের মুহূর্ত ৩" data-caption-en="Vote Day Moment 3"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ৩</div><div class="vote-caption en-content">Vote Day Moment 3</div></div>
+                <div class="vote-card"><img src="vote_4.JPG" alt="Vote Day Moment 4" data-caption-bn="ভোট দিবসের মুহূর্ত ৪" data-caption-en="Vote Day Moment 4"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ৪</div><div class="vote-caption en-content">Vote Day Moment 4</div></div>
+                <div class="vote-card"><img src="vote_5.JPG" alt="Vote Day Moment 5" data-caption-bn="ভোট দিবসের মুহূর্ত ৫" data-caption-en="Vote Day Moment 5"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ৫</div><div class="vote-caption en-content">Vote Day Moment 5</div></div>
+            </div><div class="vote-caption en-content">Vote Day Moment 1</div></div>
                 <div class="vote-card"><img src="vote_2.jpg" alt="Vote Day Moment 2" data-caption-bn="ভোট দিবসের মুহূর্ত ২" data-caption-en="Vote Day Moment 2"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ২</div><div class="vote-caption en-content">Vote Day Moment 2</div></div>
                 <div class="vote-card"><img src="vote_3.jpg" alt="Vote Day Moment 3" data-caption-bn="ভোট দিবসের মুহূর্ত ৩" data-caption-en="Vote Day Moment 3"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ৩</div><div class="vote-caption en-content">Vote Day Moment 3</div></div>
                 <div class="vote-card"><img src="vote_4.JPG" alt="Vote Day Moment 4" data-caption-bn="ভোট দিবসের মুহূর্ত ৪" data-caption-en="Vote Day Moment 4"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ৪</div><div class="vote-caption en-content">Vote Day Moment 4</div></div>
