@@ -238,6 +238,43 @@
             border-color: #FFD166;
         }
 
+        .result-ticker-section { background: var(--light-gray); padding: 30px 2rem 10px; }
+        .result-ticker-title { text-align: center; font-size: 1.6rem; color: var(--dark-green); margin-bottom: 1rem; }
+        .result-ticker {
+            background: #0b5f34;
+            color: #ff9800;
+            padding: 0.9rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #FFD166;
+            box-shadow: none;
+        }
+        .result-ticker-track {
+            display: inline-flex;
+            gap: 2.5rem;
+            white-space: nowrap;
+            animation: resultTicker 60s linear infinite;
+        }
+        .result-ticker-item {
+            display: inline-flex;
+            gap: 1.2rem;
+            align-items: center;
+        }
+        .result-pill {
+            background: rgba(255,255,255,0.12);
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        @keyframes resultTicker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+
         @keyframes heroFloat {
             0% { transform: scale(1.05) translateY(0); }
             50% { transform: scale(1.1) translateY(-8px); }
@@ -1191,7 +1228,21 @@
     </section>
 
 
-    <!-- Hero Section -->
+        <!-- Result Ticker Section -->
+    <section class="result-ticker-section">
+        <div class="container">
+            <div class="result-ticker-title bn-content">এক নজরে রাজশাহী-১ আসন</div>
+            <div class="result-ticker">
+                <div class="result-ticker-track" id="resultTickerTrack">
+                    <div class="result-ticker-item bn-content">
+                        <span class="result-pill">ডেটা লোড হচ্ছে...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Hero Section -->
     <section class="hero">
         <h1 class="bn-content">প্রফেসর মুজিবুর রহমান</h1>
         <h1 class="en-content">Professor Mujibur Rahman</h1>
@@ -1941,6 +1992,64 @@
                 if (e.key === 'Escape') voteModal.classList.remove('active');
             });
         }
+
+        // Result ticker from Google Sheet (Apps Script JSON)
+        (function loadResultTicker() {
+            const DATA_URL = 'https://script.google.com/macros/s/AKfycbwHdcBHka9CPikeNzukkMZi079-oTeJziTEAWRM4WE/dev';
+            const track = document.getElementById('resultTickerTrack');
+            if (!track) return;
+
+            const buildItem = (label, parts) => {
+                const div = document.createElement('div');
+                div.className = 'result-ticker-item bn-content';
+                const pill = document.createElement('span');
+                pill.className = 'result-pill';
+                pill.textContent = label;
+                div.appendChild(pill);
+                parts.forEach((p) => {
+                    const span = document.createElement('span');
+                    span.textContent = p;
+                    div.appendChild(span);
+                });
+                return div;
+            };
+
+            fetch(DATA_URL)
+                .then((r) => r.json())
+                .then((rows) => {
+                    track.innerHTML = '';
+                    if (!Array.isArray(rows) || rows.length === 0) {
+                        track.appendChild(buildItem('ডেটা নেই', ['শিগগিরই আপডেট হবে']));
+                        return;
+                    }
+
+                    // Header row
+                    track.appendChild(buildItem('ক্রমিক নং', [
+                        'উপজেলার নাম', 'মোট ভোটার',
+                        'প্রতীক: ট্রাক • ঈগল • মোবাইল • দাঁড়িপাল্লা • ধানের শীষ',
+                        'ভোট: বৈধ • অবৈধ • সর্বমোট',
+                        'শতকরা হার', 'কেন্দ্র'
+                    ]));
+
+                    rows.forEach((row) => {
+                        const get = (k) => (row && row[k] !== undefined && row[k] !== null) ? String(row[k]) : '০';
+                        const label = get('ক্রমিক নং') || get('উপজেলার নাম') || '—';
+                        const parts = [
+                            `উপজেলা: ${get('উপজেলার নাম')}`,
+                            `মোট ভোটার: ${get('মোট ভোটার')}`,
+                            `ট্রাক: ${get('ট্রাক')} • ঈগল: ${get('ঈগল')} • মোবাইল: ${get('মোবাইল')} • দাঁড়িপাল্লা: ${get('দাঁড়িপাল্লা')} • ধানের শীষ: ${get('ধানের শীষ')}`,
+                            `বৈধ ভোট: ${get('বৈধ ভোট')} • অবৈধ ভোট: ${get('অবৈধ ভোট')} • সর্বমোট: ${get('সর্বমোট')}`,
+                            `শতকরা হার: ${get('শতকরা হার')}`,
+                            `কেন্দ্র: ${get('কেন্দ্র')}`
+                        ];
+                        track.appendChild(buildItem(label, parts));
+                    });
+                })
+                .catch(() => {
+                    track.innerHTML = '';
+                    track.appendChild(buildItem('ডেটা লোড হয়নি', ['ইন্টারনেট সংযোগ পরীক্ষা করুন']));
+                });
+        })();
 
         // Emergency popup on page load
         const emergencyPopup = document.getElementById('emergencyPopup');
