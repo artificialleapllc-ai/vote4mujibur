@@ -369,6 +369,47 @@
             color: #2c3e50;
             background: #f7f7f7;
         }
+        .popup-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2500;
+            padding: 1rem;
+        }
+        .popup-modal.active { display: flex; }
+        .popup-content {
+            max-width: 90vw;
+            max-height: 85vh;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+            position: relative;
+        }
+        .popup-content img {
+            display: block;
+            max-width: 90vw;
+            max-height: 85vh;
+            width: auto;
+            height: auto;
+        }
+        .popup-close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
         .vote-ticker {
             margin-top: 1.5rem;
             background: #B30000;
@@ -1879,6 +1920,25 @@
             voteModal.addEventListener('click', () => voteModal.classList.remove('active'));
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') voteModal.classList.remove('active');
+            });
+        }
+
+        // Emergency popup on page load
+        const emergencyPopup = document.getElementById('emergencyPopup');
+        const popupClose = document.getElementById('popupClose');
+        if (emergencyPopup && popupClose) {
+            window.addEventListener('load', () => {
+                emergencyPopup.classList.add('active');
+            });
+            popupClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                emergencyPopup.classList.remove('active');
+            });
+            emergencyPopup.addEventListener('click', () => {
+                emergencyPopup.classList.remove('active');
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') emergencyPopup.classList.remove('active');
             });
         }
 
