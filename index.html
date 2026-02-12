@@ -314,6 +314,83 @@
         .manifesto-section .en-content { display: none; }
         body.lang-en .manifesto-section .bn-content { display: none; }
         body.lang-en .manifesto-section .en-content { display: block; }
+        .vote-update { background: var(--light-gray); }
+        .vote-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+        .vote-card {
+            background: var(--white);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+        .vote-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            cursor: pointer;
+        }
+        .vote-caption {
+            padding: 0.9rem 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .vote-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .vote-modal.active { display: flex; }
+        .vote-modal-content {
+            max-width: 90vw;
+            max-height: 85vh;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+        }
+        .vote-modal-content img {
+            display: block;
+            max-width: 90vw;
+            max-height: 70vh;
+            width: auto;
+            height: auto;
+        }
+        .vote-modal-caption {
+            padding: 0.9rem 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            background: #f7f7f7;
+        }
+        .vote-ticker {
+            margin-top: 1.5rem;
+            background: #B30000;
+            color: #ffffff;
+            padding: 1rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #FFD166;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+        }
+        .vote-ticker span {
+            display: inline-block;
+            white-space: nowrap;
+            animation: ticker 18s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
 
         .cta-button {
             display: inline-block;
@@ -1074,7 +1151,30 @@
         <a href="#opinion" class="cta-button en-content">Share Your Opinion</a>
     </section>
 
-    <!-- Manifesto Section -->
+        <!-- Vote Day Update Section -->
+    <section id="vote-day" class="vote-update">
+        <div class="container">
+            <h2 class="section-title bn-content">ভোট দিবস আপডেট</h2>
+            <h2 class="section-title en-content">Vote Day Update</h2>
+            <p class="section-lead bn-content">ভোটের দিনের সর্বশেষ আপডেট ও মুহূর্তগুলো এখানে দেখুন।</p>
+            <p class="section-lead en-content">See the latest updates and moments from election day.</p>
+
+            <div class="vote-grid">
+                <div class="vote-card"><img src="vote_1.jpg" alt="Vote Day Moment 1" data-caption-bn="ভোট দিবসের মুহূর্ত ১" data-caption-en="Vote Day Moment 1"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ১</div><div class="vote-caption en-content">Vote Day Moment 1</div></div>
+                <div class="vote-card"><img src="vote_2.jpg" alt="Vote Day Moment 2" data-caption-bn="ভোট দিবসের মুহূর্ত ২" data-caption-en="Vote Day Moment 2"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ২</div><div class="vote-caption en-content">Vote Day Moment 2</div></div>
+                <div class="vote-card"><img src="vote_3.jpg" alt="Vote Day Moment 3" data-caption-bn="ভোট দিবসের মুহূর্ত ৩" data-caption-en="Vote Day Moment 3"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ৩</div><div class="vote-caption en-content">Vote Day Moment 3</div></div>
+                <div class="vote-card"><img src="vote_4.JPG" alt="Vote Day Moment 4" data-caption-bn="ভোট দিবসের মুহূর্ত ৪" data-caption-en="Vote Day Moment 4"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ৪</div><div class="vote-caption en-content">Vote Day Moment 4</div></div>
+                <div class="vote-card"><img src="vote_5.JPG" alt="Vote Day Moment 5" data-caption-bn="ভোট দিবসের মুহূর্ত ৫" data-caption-en="Vote Day Moment 5"><div class="vote-caption bn-content">ভোট দিবসের মুহূর্ত ৫</div><div class="vote-caption en-content">Vote Day Moment 5</div></div>
+            </div>
+
+            <div class="vote-ticker">
+                <span class="bn-content">ভোট দিবসে শান্তিপূর্ণ ভোটগ্রহণ নিশ্চিত করুন • ভোটার আইডি সঙ্গে আনুন • আপনার কেন্দ্রের আপডেট দেখুন</span>
+                <span class="en-content">Ensure peaceful voting • Bring your voter ID • Check updates for your polling center</span>
+            </div>
+        </div>
+    </section>
+
+<!-- Manifesto Section -->
     <section class="manifesto-section">
         <div class="container">
             <h2 class="section-title bn-content">ইশতেহার</h2>
@@ -1760,6 +1860,25 @@
             });
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') navToggle.checked = false;
+            });
+        }
+
+        // Vote day modal zoom
+        const voteModal = document.getElementById('voteModal');
+        const voteModalImage = document.getElementById('voteModalImage');
+        const voteModalCaption = document.getElementById('voteModalCaption');
+        document.querySelectorAll('.vote-card img').forEach((img) => {
+            img.addEventListener('click', () => {
+                voteModalImage.src = img.src;
+                const isEnglish = document.body.classList.contains('lang-en');
+                voteModalCaption.textContent = isEnglish ? img.dataset.captionEn : img.dataset.captionBn;
+                voteModal.classList.add('active');
+            });
+        });
+        if (voteModal) {
+            voteModal.addEventListener('click', () => voteModal.classList.remove('active'));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') voteModal.classList.remove('active');
             });
         }
 
