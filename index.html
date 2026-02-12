@@ -256,7 +256,13 @@
             display: inline-flex;
             gap: 2.5rem;
             white-space: nowrap;
-            animation: resultTicker 120s linear infinite;
+            flex-shrink: 0;
+            animation: resultTicker 90s linear infinite;
+        }
+        .result-ticker-inner {
+            display: inline-flex;
+            gap: 2.5rem;
+            width: max-content;
         }
         .result-ticker-item {
             display: inline-flex;
@@ -270,8 +276,24 @@
             border: 1px solid rgba(255,255,255,0.2);
         }
         @keyframes resultTicker {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @media (max-width: 768px) {
+            .result-ticker {
+                padding: 1.4rem 1.4rem;
+                font-size: 1.4rem;
+                border-radius: 8px;
+            }
+            .result-ticker-item {
+                gap: 0.8rem;
+            }
+            .result-pill {
+                padding: 0.2rem 0.5rem;
+            }
+            .result-ticker-track {
+                animation-duration: 70s;
+            }
         }
 
 
@@ -1233,10 +1255,13 @@
         <div class="container">
             <div class="result-ticker-title bn-content">এক নজরে রাজশাহী-১ আসন</div>
             <div class="result-ticker">
-                <div class="result-ticker-track" id="resultTickerTrack">
+                <div class="result-ticker-inner" id="resultTickerInner">
+                    <div class="result-ticker-track" id="resultTickerTrack">
                     <div class="result-ticker-item bn-content">
                         <span class="result-pill">ডেটা লোড হচ্ছে...</span>
                     </div>
+                </div>
+                    <div class="result-ticker-track" id="resultTickerTrackClone"></div>
                 </div>
             </div>
         </div>
@@ -1997,7 +2022,8 @@
         (function loadResultTicker() {
             const DATA_URL = 'https://script.google.com/macros/s/AKfycbzyuDaZXmwFL-CGcpfDEfW19O3WR1E11at8Ht3SqrldbMGaM-pWsd3WYKQnAqEfrW1C/exec';
             const track = document.getElementById('resultTickerTrack');
-            if (!track) return;
+            const trackClone = document.getElementById('resultTickerTrackClone');
+            if (!track || !trackClone) return;
 
             const buildItem = (label, parts) => {
                 const div = document.createElement('div');
@@ -2018,8 +2044,10 @@
                 .then((r) => r.json())
                 .then((rows) => {
                     track.innerHTML = '';
+                    trackClone.innerHTML = '';
                     if (!Array.isArray(rows) || rows.length === 0) {
                         track.appendChild(buildItem('ডেটা নেই', ['শিগগিরই আপডেট হবে']));
+                    trackClone.appendChild(track.firstElementChild.cloneNode(true));
                         return;
                     }
 
@@ -2044,10 +2072,13 @@
                         ];
                         track.appendChild(buildItem(label, parts));
                     });
+                    trackClone.innerHTML = track.innerHTML;
                 })
                 .catch(() => {
                     track.innerHTML = '';
+                    trackClone.innerHTML = '';
                     track.appendChild(buildItem('ডেটা লোড হয়নি', ['ইন্টারনেট সংযোগ পরীক্ষা করুন']));
+                    trackClone.appendChild(track.firstElementChild.cloneNode(true));
                 });
         })();
 
