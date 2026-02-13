@@ -405,6 +405,19 @@
             font-size: 1.6rem;
             overflow: hidden;
         }
+        .summary-winner {
+            margin-top: 0.35rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            background: #e7f7ee;
+            color: #0a7a3d;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: none;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .summary-winner.active { display: inline-flex; }
         .summary-symbol img { width: 44px; height: 44px; object-fit: contain; }
         .summary-symbol.bnp-symbol {
             font-size: 0.75rem;
@@ -1317,6 +1330,7 @@
                     <div class="summary-title">জামায়াত (দাঁড়িপাল্লা)</div>
                     <div class="summary-value" id="jamatTotal">০</div>
                     <div class="summary-sub">প্রাপ্ত ভোট</div>
+                    <div class="summary-winner" id="jamatWinner">✔ বিজয়ী</div>
                 </div>
                 <div class="summary-card">
                     <div class="summary-symbol bnp-symbol"><span>ধানের শীষ</span></div>
@@ -2276,6 +2290,7 @@
                 const centerUpdatedEl = document.getElementById('centerUpdated');
                 const totalVotesEl = document.getElementById('totalVotes');
                 const leadTextEl = document.getElementById('leadText');
+                const jamatWinnerEl = document.getElementById('jamatWinner');
                 tbody.innerHTML = '';
                 if (!Array.isArray(rows) || rows.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="13">ডেটা নেই</td></tr>';
@@ -2353,6 +2368,10 @@
                     if (jamatSum > bnpSum) leadTextEl.textContent = 'লিডার: জামায়াত +' + (jamatSum - bnpSum).toLocaleString('bn-BD');
                     else if (bnpSum > jamatSum) leadTextEl.textContent = 'লিডার: বিএনপি +' + (bnpSum - jamatSum).toLocaleString('bn-BD');
                     else leadTextEl.textContent = 'লিডার: সমান';
+                }
+                if (jamatWinnerEl) {
+                    if (jamatSum > bnpSum) jamatWinnerEl.classList.add('active');
+                    else jamatWinnerEl.classList.remove('active');
                 }
             };
 
