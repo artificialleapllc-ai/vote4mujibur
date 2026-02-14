@@ -380,6 +380,25 @@
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 1.5rem;
         }
+        .result-summary-media {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: center;
+            margin: 1.25rem 0 1.5rem;
+            flex-wrap: wrap;
+        }
+        .result-summary-media img {
+            width: min(520px, 100%);
+            height: auto;
+            border-radius: 14px;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+            border: 3px solid #e6f2ea;
+            background: #fff;
+        }
+        @media (max-width: 900px) {
+            .result-summary-media img { width: min(100%, 520px); }
+        }
         .summary-card {
             background: var(--white);
             border-radius: 12px;
@@ -1324,6 +1343,10 @@
     <section class="result-ticker-section">
         <div class="container">
             <h2 class="section-title bn-content">এক নজরে রাজশাহী-১ আসন</h2>
+            <div class="result-summary-media">
+                <img src="result_1.jpeg" alt="Rajshahi-1 Result Highlight 1">
+                <img src="result_2.jpeg" alt="Rajshahi-1 Result Highlight 2">
+            </div>
             <div class="result-summary">
                 <div class="summary-card">
                     <div class="summary-symbol"><img src="দাঁড়িপাল্লায় ভোট দিন.png" alt="দাঁড়িপাল্লা"></div>
