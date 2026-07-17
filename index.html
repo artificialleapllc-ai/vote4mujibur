@@ -253,6 +253,95 @@
         .stat-value { display: block; color: var(--green); font-size: 1.6rem; font-weight: 700; }
         .stat-label { color: var(--ink-soft); font-size: 0.9rem; }
 
+        .activities-section { background: var(--bg); padding: 3.5rem 0; }
+        .activity-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin: 1.25rem 0 1.75rem; }
+        .filter-chip {
+            background: var(--surface);
+            border: 1px solid var(--green);
+            color: var(--green);
+            border-radius: 30px;
+            padding: 0.35rem 1.1rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .filter-chip.active, .filter-chip:hover { background: var(--green); color: #fff; }
+
+        .activity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+        .activity-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .activity-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(11,31,22,.14); }
+        .activity-card img { width: 100%; height: 180px; object-fit: cover; display: block; }
+        .activity-card-body { padding: 0.9rem 1.1rem; }
+        .activity-tag {
+            display: inline-block;
+            background: var(--green-tint);
+            color: var(--green);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.1rem 0.7rem;
+            border-radius: 12px;
+        }
+        .activity-date { color: var(--ink-soft); font-size: 0.82rem; margin-left: 0.4rem; }
+        .activity-card-body h3 { color: var(--ink); font-size: 1.05rem; margin: 0.45rem 0 0.3rem; line-height: 1.45; }
+        .activity-excerpt {
+            color: var(--ink-soft); font-size: 0.9rem;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .activity-message { text-align: center; color: var(--ink-soft); padding: 2rem 0; }
+        .activity-more-wrap { text-align: center; margin-top: 1.75rem; }
+        .activity-more {
+            background: var(--surface); border: 1px solid var(--green); color: var(--green);
+            border-radius: 30px; padding: 0.55rem 2.2rem; font-family: inherit; font-size: 1rem; cursor: pointer;
+        }
+        .activity-more:hover { background: var(--green); color: #fff; }
+
+        .activity-modal {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(11,31,22,.75);
+            display: flex; align-items: center; justify-content: center; padding: 1rem;
+        }
+        /* author display values override the hidden attribute — restore it explicitly */
+        .activity-modal[hidden], #modalLink[hidden] { display: none; }
+        .activity-modal-card {
+            background: var(--surface); border-radius: var(--radius);
+            max-width: 720px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative;
+        }
+        .modal-close {
+            position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
+            background: rgba(255,255,255,.9); border: none; border-radius: 50%;
+            width: 34px; height: 34px; font-size: 1rem; cursor: pointer;
+        }
+        .modal-photo-wrap { position: relative; background: var(--green-tint); }
+        .modal-photo-wrap img { width: 100%; max-height: 55vh; object-fit: contain; display: block; }
+        .modal-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,.9); border: none; border-radius: 50%;
+            width: 38px; height: 38px; font-size: 1.4rem; cursor: pointer;
+        }
+        .modal-nav#modalPrev { left: 0.6rem; }
+        .modal-nav#modalNext { right: 0.6rem; }
+        .modal-photo-count {
+            position: absolute; bottom: 0.6rem; right: 0.8rem;
+            background: rgba(11,31,22,.65); color: #fff; font-size: 0.78rem;
+            padding: 0.1rem 0.6rem; border-radius: 12px;
+        }
+        .modal-body { padding: 1.1rem 1.4rem 1.5rem; }
+        .modal-body h3 { color: var(--ink); margin: 0.4rem 0 0.5rem; }
+        .modal-body p { color: var(--ink-soft); }
+        .modal-meta { font-size: 0.85rem; }
+        #modalLink { display: inline-block; margin-top: 0.8rem; color: var(--green); font-weight: 600; text-decoration: none; }
+
+        @media (max-width: 900px) { .activity-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 560px) { .activity-grid { grid-template-columns: 1fr; } }
+
         @media (max-width: 768px) {
             .hero-grid { grid-template-columns: 1fr; gap: 1.5rem; }
             .hero-identity h1 { font-size: 1.7rem; }
@@ -922,7 +1011,40 @@
     </div>
 </section>
 
+<!-- Activities -->
+<section id="activities" class="activities-section">
+    <div class="container">
+        <h2 class="section-title bn-content">কার্যক্রম</h2>
+        <h2 class="section-title en-content">Activities</h2>
+        <p class="section-lead bn-content">সংসদ সদস্য হিসেবে অধ্যাপক মুজিবুর রহমানের চলমান কার্যক্রম — নতুন থেকে পুরাতন।</p>
+        <p class="section-lead en-content">Ongoing activities of Professor Mujibur Rahman as MP — newest first.</p>
+        <div class="activity-filters" id="activityFilters"></div>
+        <div class="activity-grid" id="activityGrid"></div>
+        <p class="activity-message" id="activityMessage" hidden></p>
+        <div class="activity-more-wrap">
+            <button type="button" class="activity-more" id="activityMore" hidden>আরও দেখুন</button>
+        </div>
+    </div>
+</section>
 
+<!-- Activity lightbox -->
+<div class="activity-modal" id="activityModal" hidden>
+    <div class="activity-modal-card" role="dialog" aria-modal="true">
+        <button type="button" class="modal-close" id="modalClose" aria-label="বন্ধ করুন">✕</button>
+        <div class="modal-photo-wrap">
+            <button type="button" class="modal-nav" id="modalPrev" aria-label="আগের ছবি">‹</button>
+            <img id="modalPhoto" src="" alt="">
+            <button type="button" class="modal-nav" id="modalNext" aria-label="পরের ছবি">›</button>
+            <span class="modal-photo-count" id="modalCount"></span>
+        </div>
+        <div class="modal-body">
+            <p class="modal-meta"><span class="activity-tag" id="modalCategory"></span> <span id="modalDate"></span></p>
+            <h3 id="modalTitle"></h3>
+            <p id="modalDescription"></p>
+            <a id="modalLink" href="" target="_blank" rel="noopener" hidden>ফেসবুকে দেখুন →</a>
+        </div>
+    </div>
+</div>
 
 <!-- Manifesto Section -->
     <section class="manifesto-section">
@@ -1423,6 +1545,140 @@
             box.hidden = false;
             box.querySelector('.latest-card').addEventListener('click', () => {
                 document.getElementById('activities')?.scrollIntoView({ behavior: 'smooth' });
+            });
+        })();
+
+        // ---- Activities section ----
+        (function activitiesSection() {
+            const grid = document.getElementById('activityGrid');
+            const filtersBox = document.getElementById('activityFilters');
+            const moreBtn = document.getElementById('activityMore');
+            const message = document.getElementById('activityMessage');
+            if (!grid) return;
+
+            const PAGE_SIZE = 9;
+            const all = getActivities();
+
+            if (!all) {
+                message.textContent = 'কার্যক্রম লোড করা যাচ্ছে না — activities.js ফাইলটি পরীক্ষা করুন';
+                message.hidden = false;
+                return;
+            }
+            if (all.length === 0) {
+                message.textContent = 'এখনও কোনো কার্যক্রম যোগ করা হয়নি।';
+                message.hidden = false;
+                return;
+            }
+
+            const hasOther = all.some((a) => a.category === OTHER_CATEGORY);
+            const chipLabels = ['সব'].concat(ACTIVITY_CATEGORIES, hasOther ? [OTHER_CATEGORY] : []);
+            let currentFilter = 'সব';
+            let visibleCount = PAGE_SIZE;
+
+            chipLabels.forEach((label) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'filter-chip' + (label === 'সব' ? ' active' : '');
+                b.textContent = label;
+                b.addEventListener('click', () => {
+                    currentFilter = label;
+                    visibleCount = PAGE_SIZE;
+                    filtersBox.querySelectorAll('.filter-chip').forEach((c) => c.classList.toggle('active', c === b));
+                    render();
+                });
+                filtersBox.appendChild(b);
+            });
+
+            function filtered() {
+                return currentFilter === 'সব' ? all : all.filter((a) => a.category === currentFilter);
+            }
+
+            function render() {
+                const list = filtered();
+                grid.innerHTML = '';
+                list.slice(0, visibleCount).forEach((a) => {
+                    const card = document.createElement('div');
+                    card.className = 'activity-card';
+                    const img = document.createElement('img');
+                    img.src = a.photos[0] || PLACEHOLDER_IMG;
+                    img.alt = a.title;
+                    img.loading = 'lazy';
+                    img.onerror = function () { this.onerror = null; this.src = PLACEHOLDER_IMG; };
+                    const body = document.createElement('div');
+                    body.className = 'activity-card-body';
+                    const meta = document.createElement('p');
+                    const tag = document.createElement('span');
+                    tag.className = 'activity-tag';
+                    tag.textContent = a.category;
+                    const date = document.createElement('span');
+                    date.className = 'activity-date';
+                    date.textContent = a.dateLabel;
+                    meta.append(tag, date);
+                    const h3 = document.createElement('h3');
+                    h3.textContent = a.title;
+                    const p = document.createElement('p');
+                    p.className = 'activity-excerpt';
+                    p.textContent = a.description;
+                    body.append(meta, h3, p);
+                    card.append(img, body);
+                    card.addEventListener('click', () => openModal(a));
+                    grid.appendChild(card);
+                });
+                moreBtn.hidden = list.length <= visibleCount;
+            }
+
+            moreBtn.addEventListener('click', () => { visibleCount += PAGE_SIZE; render(); });
+            render();
+
+            // ---- Lightbox ----
+            const modal = document.getElementById('activityModal');
+            const modalPhoto = document.getElementById('modalPhoto');
+            const modalCount = document.getElementById('modalCount');
+            let modalPhotos = [];
+            let photoIndex = 0;
+
+            function showPhoto() {
+                modalPhoto.src = modalPhotos[photoIndex] || PLACEHOLDER_IMG;
+                modalPhoto.onerror = function () { this.onerror = null; this.src = PLACEHOLDER_IMG; };
+                modalCount.textContent = toBnDigits(photoIndex + 1) + ' / ' + toBnDigits(modalPhotos.length);
+                modalCount.hidden = modalPhotos.length < 2;
+                document.getElementById('modalPrev').hidden = modalPhotos.length < 2;
+                document.getElementById('modalNext').hidden = modalPhotos.length < 2;
+            }
+
+            function openModal(a) {
+                modalPhotos = a.photos.length ? a.photos : [PLACEHOLDER_IMG];
+                photoIndex = 0;
+                document.getElementById('modalCategory').textContent = a.category;
+                document.getElementById('modalDate').textContent = a.dateLabel;
+                document.getElementById('modalTitle').textContent = a.title;
+                document.getElementById('modalDescription').textContent = a.description;
+                const link = document.getElementById('modalLink');
+                link.hidden = !a.link;
+                if (a.link) link.href = a.link;
+                showPhoto();
+                modal.hidden = false;
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modal.hidden = true;
+                document.body.style.overflow = '';
+            }
+
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            document.getElementById('modalPrev').addEventListener('click', () => {
+                photoIndex = (photoIndex - 1 + modalPhotos.length) % modalPhotos.length; showPhoto();
+            });
+            document.getElementById('modalNext').addEventListener('click', () => {
+                photoIndex = (photoIndex + 1) % modalPhotos.length; showPhoto();
+            });
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+            document.addEventListener('keydown', (e) => {
+                if (modal.hidden) return;
+                if (e.key === 'Escape') closeModal();
+                if (e.key === 'ArrowLeft') document.getElementById('modalPrev').click();
+                if (e.key === 'ArrowRight') document.getElementById('modalNext').click();
             });
         })();
 
