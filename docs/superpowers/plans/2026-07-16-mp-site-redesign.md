@@ -164,7 +164,7 @@ const activities = [
 - [ ] **Step 4: Verify the file parses and has 6 entries**
 
 ```bash
-node -e "eval(require('fs').readFileSync('activities.js','utf8')); console.log(activities.length, 'activities,', new Set(activities.map(a=>a.category)).size, 'categories')"
+node -e "$(cat activities.js); console.log(activities.length, 'activities,', new Set(activities.map(a=>a.category)).size, 'categories')"
 ```
 
 Expected output: `6 activities, 4 categories`
@@ -1061,7 +1061,7 @@ With `python3 -m http.server 8000` running, confirm each:
 6. BN/EN toggle correct in header, hero identity, stats labels, about, commitments, videos, opinion, contact, footer
 7. Mobile ≤ 480px and desktop: no horizontal scroll, grids collapse, lightbox usable
 8. Console: zero errors on load and through all interactions
-9. `node -e "eval(require('fs').readFileSync('activities.js','utf8')); console.log(activities.length)"` → `6`
+9. `node -e "$(cat activities.js); console.log(activities.length)"` → `6`
 
 - [ ] **Step 3: Commit**
 
