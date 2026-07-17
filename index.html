@@ -180,52 +180,84 @@
         }
 
         .hero {
-            background: linear-gradient(rgba(0,102,51,0.88), rgba(0,68,34,0.92));
-            color: var(--white);
-            padding: 150px 2rem 100px;
-            text-align: center;
-            margin-top: 60px;
-            position: relative;
-            overflow: hidden;
+            background: var(--surface);
+            padding: 7.5rem 0 3rem;   /* clears the fixed header */
         }
-        .hero::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: url('hero-symbol.png') center/cover no-repeat;
-            opacity: 0.18;
-            transform: scale(1.05);
-            animation: heroFloat 14s ease-in-out infinite;
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
         }
-        .hero > * {
-            position: relative;
-            z-index: 1;
-        }
-
-
-        @keyframes heroFloat {
-            0% { transform: scale(1.05) translateY(0); }
-            50% { transform: scale(1.1) translateY(-8px); }
-            100% { transform: scale(1.05) translateY(0); }
-        }
-        .hero h1 {
-            font-size: 3.5rem;
+        .hero-photo {
+            width: 110px; height: 110px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--green);
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        .hero .subtitle {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            color: #FFD166;
+        .hero-identity h1 { color: var(--ink); font-size: 2.2rem; line-height: 1.3; }
+        .hero-role { color: var(--ink-soft); margin: 0.25rem 0 0.75rem; }
+        .hero-quote { color: var(--ink); font-weight: 600; margin-bottom: 1.25rem; }
+        .cta-button {
+            display: inline-block;
+            background: var(--green);
+            color: #fff;
+            padding: 0.7rem 1.8rem;
+            border-radius: 30px;
+            text-decoration: none;
             font-weight: 600;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.45);
+            transition: background 0.2s;
         }
-        .hero p { font-size: 1.2rem; margin-bottom: 1rem; }
-        .symbol-logo {
-            width: 200px;
-            height: 200px;
-            margin: 1.5rem auto;
+        .cta-button:hover { background: var(--green-dark); }
+
+        .hero-latest .latest-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: 0 4px 16px rgba(11,31,22,.12);
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .latest-badge {
             display: block;
+            background: var(--green);
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.3rem 0.9rem;
+        }
+        .latest-card img { width: 100%; height: 220px; object-fit: cover; display: block; }
+        .latest-body { padding: 0.9rem 1.1rem; }
+        .latest-body h3 { color: var(--ink); font-size: 1.15rem; margin-bottom: 0.3rem; }
+        .latest-meta { color: var(--ink-soft); font-size: 0.85rem; }
+
+        .stats-band { background: var(--green-tint); padding: 1.5rem 0; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        .stat-tile {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            padding: 1rem 0.5rem;
+        }
+        .stat-value { display: block; color: var(--green); font-size: 1.6rem; font-weight: 700; }
+        .stat-label { color: var(--ink-soft); font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            .hero-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .hero-identity h1 { font-size: 1.7rem; }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+            .stat-value { font-size: 1.2rem; }
         }
         .manifesto-section { background: var(--white); }
         .manifesto-section .section-lead { text-align: center; }
@@ -279,24 +311,6 @@
         .manifesto-section .en-content { display: none; }
         body.lang-en .manifesto-section .bn-content { display: none; }
         body.lang-en .manifesto-section .en-content { display: block; }
-
-        .cta-button {
-            display: inline-block;
-            padding: 1rem 2.5rem;
-            background: var(--red);
-            color: var(--white);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border-radius: 50px;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(220,20,60,0.3);
-            margin-top: 1rem;
-        }
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(220,20,60,0.5);
-        }
 
         section {
             padding: 80px 2rem;
@@ -751,8 +765,6 @@
 
         @media (max-width: 768px) {
             body { padding-bottom: 70px; }
-            .hero h1 { font-size: 2rem; }
-            .hero .subtitle { font-size: 1.3rem; }
             .about-grid { grid-template-columns: 1fr; text-align: center; }
             .profile-img, .profile-placeholder { margin: 0 auto; }
             .lang-switch {
@@ -883,23 +895,32 @@
     </header>
 
 
-<!-- Hero Section -->
-    <section class="hero">
-        <h1 class="bn-content">প্রফেসর মুজিবুর রহমান</h1>
-        <h1 class="en-content">Professor Mujibur Rahman</h1>
-        
-        <p class="subtitle bn-content">জামায়াতে ইসলামী বাংলাদেশের সিনিয়র নায়েবে আমীর</p>
-        <p class="subtitle en-content">Senior Nayeb-e-Ameer, Bangladesh Jamaat-e-Islami</p>
-        
-        <p class="bn-content">রাজশাহী-১ (গোদাগাড়ী-তানোর) আসনের প্রার্থী</p>
-        <p class="en-content">Candidate for Rajshahi-1 (Godagari-Tanor)</p>
-        
-        <img src="hero-symbol.png" alt="নির্বাচনী প্রতীক - দাঁড়িপাল্লা" class="symbol-logo">
-        
-        
-        <a href="#opinion" class="cta-button bn-content">আপনার মতামত দিন</a>
-        <a href="#opinion" class="cta-button en-content">Share Your Opinion</a>
-    </section>
+<!-- Live Hero -->
+<section class="hero">
+    <div class="container hero-grid">
+        <div class="hero-identity">
+            <img src="profile.jpg" alt="অধ্যাপক মুজিবুর রহমান" class="hero-photo">
+            <h1 class="bn-content">অধ্যাপক মুজিবুর রহমান</h1>
+            <h1 class="en-content">Professor Mujibur Rahman</h1>
+            <p class="hero-role bn-content">সংসদ সদস্য · রাজশাহী-১ (গোদাগাড়ী-তানোর)</p>
+            <p class="hero-role en-content">Member of Parliament · Rajshahi-1 (Godagari–Tanore)</p>
+            <p class="hero-quote bn-content">“জনগণের সেবাই আমার অঙ্গীকার”</p>
+            <p class="hero-quote en-content">“Serving the people is my commitment”</p>
+            <a href="#activities" class="cta-button bn-content">সর্বশেষ কার্যক্রম দেখুন</a>
+            <a href="#activities" class="cta-button en-content">See Latest Activities</a>
+        </div>
+        <div class="hero-latest" id="heroLatest" hidden></div>
+    </div>
+</section>
+
+<!-- Constituency stats band -->
+<section class="stats-band">
+    <div class="container stats-grid">
+        <div class="stat-tile"><span class="stat-value">২টি</span><span class="stat-label bn-content">উপজেলা</span><span class="stat-label en-content">Upazilas</span></div>
+        <div class="stat-tile"><span class="stat-value">১৬টি</span><span class="stat-label bn-content">ইউনিয়ন</span><span class="stat-label en-content">Unions</span></div>
+        <div class="stat-tile"><span class="stat-value">৪,৬৪,৬৩১</span><span class="stat-label bn-content">মোট ভোটার</span><span class="stat-label en-content">Total Voters</span></div>
+    </div>
+</section>
 
 
 
@@ -1338,11 +1359,77 @@
         </div>
     </footer>
 
+    <script src="activities.js"></script>
     <script>
+        // ---- Activity data helpers (shared by hero + activities section) ----
+        const ACTIVITY_CATEGORIES = ['জনসংযোগ', 'বক্তব্য ও সমাবেশ', 'উন্নয়ন ও ত্রাণ', 'সংসদ'];
+        const OTHER_CATEGORY = 'অন্যান্য';
+        const PLACEHOLDER_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400">' +
+            '<rect width="100%" height="100%" fill="#e6f2ec"/>' +
+            '<text x="50%" y="50%" font-size="36" fill="#5a6e64" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif">ছবি নেই</text></svg>');
+
+        function toBnDigits(value) {
+            return String(value).replace(/\d/g, (d) => '০১২৩৪৫৬৭৮৯'[d]);
+        }
+
+        function formatBanglaDate(iso) {
+            const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso).trim());
+            if (!m) return String(iso);
+            const months = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন',
+                            'জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+            const mi = parseInt(m[2], 10) - 1;
+            if (mi < 0 || mi > 11) return String(iso);
+            return toBnDigits(parseInt(m[3], 10)) + ' ' + months[mi] + ' ' + toBnDigits(m[1]);
+        }
+
+        function normalizeActivity(raw) {
+            const r = raw || {};
+            const dateStr = String(r.date || '').trim();
+            const isIso = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+            return {
+                dateKey: isIso ? dateStr : '0000-00-00',      // invalid dates sort last (list is newest-first)
+                dateLabel: formatBanglaDate(dateStr),
+                category: ACTIVITY_CATEGORIES.includes(String(r.category || '').trim())
+                    ? String(r.category).trim() : OTHER_CATEGORY,
+                title: String(r.title || 'শিরোনামহীন'),
+                description: String(r.description || ''),
+                photos: Array.isArray(r.photos) ? r.photos.filter((p) => typeof p === 'string' && p) : [],
+                link: (typeof r.link === 'string' && /^https?:\/\//.test(r.link)) ? r.link : ''
+            };
+        }
+
+        function getActivities() {
+            if (typeof activities === 'undefined' || !Array.isArray(activities)) return null;
+            return activities.map(normalizeActivity)
+                .sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+        }
+
+        // ---- Live hero: newest activity ----
+        (function renderHeroLatest() {
+            const box = document.getElementById('heroLatest');
+            if (!box) return;
+            const list = getActivities();
+            if (!list || list.length === 0) return;   // hero stays identity-only
+            const a = list[0];
+            const photo = a.photos[0] || PLACEHOLDER_IMG;
+            box.innerHTML =
+                '<div class="latest-card">' +
+                '<span class="latest-badge">● সর্বশেষ কার্যক্রম</span>' +
+                '<img src="' + photo + '" alt="" onerror="this.onerror=null;this.src=PLACEHOLDER_IMG;">' +
+                '<div class="latest-body"><h3></h3><p class="latest-meta"></p></div></div>';
+            box.querySelector('h3').textContent = a.title;
+            box.querySelector('.latest-meta').textContent = a.category + ' · ' + a.dateLabel;
+            box.hidden = false;
+            box.querySelector('.latest-card').addEventListener('click', () => {
+                document.getElementById('activities')?.scrollIntoView({ behavior: 'smooth' });
+            });
+        })();
+
         // Language Toggle Functionality
         const langToggle = document.getElementById('langToggle');
         const body = document.body;
-        
+
         // Load saved language preference
         const savedLang = localStorage.getItem('preferred-language') || 'bn';
         
