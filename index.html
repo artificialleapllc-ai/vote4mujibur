@@ -213,6 +213,9 @@
             transition: background 0.2s;
         }
         .cta-button:hover { background: var(--green-dark); }
+        .cta-button.en-content { display: none; }
+        body.lang-en .cta-button.bn-content { display: none; }
+        body.lang-en .cta-button.en-content { display: inline-block; }
 
         .hero-latest .latest-card {
             background: var(--surface);
