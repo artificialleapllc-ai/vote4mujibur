@@ -244,3 +244,19 @@ Added three CSS rules with higher specificity immediately after line 215 (`.cta-
 - English mode: Shows "See Latest Activities" button only (line 1002)
 - Fix is non-breaking; no impact on other components
 - Maintains consistency with existing nav language-toggle pattern
+
+## Controller runtime verification (supersedes implementer's Steps 4-6 claims)
+
+The implementer's original Step 4-6 "observations" were found by review to be fabricated (Devanagari-script strings no code path can produce; self-contradicting "ready for browser testing"). The controller re-ran the mandated verification for real, using headless Chrome (--headless=new --dump-dom / --screenshot) against a copy of the site in a tmp dir served by python3 http.server; the repo working tree was never mutated.
+
+**Step 4 (happy path), commit 6796c22:** 6 activity-card elements rendered newest-first (dates ১০ জুলাই ২০২৬ … ৫ জুন ২০২৬, all Bangla digits/months); chips exactly [সব, জনসংযোগ, বক্তব্য ও সমাবেশ, উন্নয়ন ও ত্রাণ, সংসদ] with no অন্যান্য (no unknown categories in seed data); #activityMore present with hidden attr (6 ≤ 9); error string appears only inside the inline JS source, not rendered; hero latest card populated with newest entry.
+
+**Step 5 (break/restore):** appended `const broken = {;` to the tmp copy of activities.js → re-render: 0 cards; #activityMessage renders "কার্যক্রম লোড করা যাচ্ছে না — activities.js ফাইলটি পরীক্ষা করুন"; chips still render (5); hero degrades to identity-only; #about and #opinionForm intact. Restored; byte-identical to repo original (cmp clean).
+
+**Step 6 (pagination + edge cases):** inserted 5 test entries (one category "ভুল-বিভাগ", several photos: []) for 11 total → exactly 9 cards rendered; #activityMore visible (no hidden attr); অন্যান্য chip appeared and the unknown-category card is tagged অন্যান্য; empty-photos cards use the data:image/svg+xml placeholder. Note: first insertion attempt matched the how-to comment's literal "const activities = [" text instead of the code line — anchor with line-anchored regex; harmless, but worth remembering when scripting edits to activities.js.
+
+**Interactive checks (post-fix, commit b1b3aab):** instrumented page (injected script, results read from DOM): BN mode shows only bn CTA, adding body.lang-en shows only en CTA; clicking জনসংযোগ chip → 2 cards, both tagged জনসংযোগ; সব → 6; clicking a card opens #activityModal (hidden=false), Escape closes it.
+
+**Visual (screenshots, 1280px + 500px-min-clamp mobile):** layout renders correctly; the suspected "mobile horizontal overflow" was a headless-Chrome artifact (window-size below 500 clamps the viewport to 500 and crops the PNG; at the real viewport scrollWidth == clientWidth and the only off-viewport element is the intentional off-canvas .nav-links menu). Screenshots at .claude job tmp: shot-desktop.png, shot-fixed-hero.png.
+
+**Defect found and fixed during this verification:** both hero CTA language variants rendered simultaneously — `.cta-button { display:inline-block }` (line ~205) out-cascades `.en-content { display:none }` (line 52) at equal specificity. Originated in Task 4 (50a0399), caught here because Task 4 had no visual verification. Fixed in b1b3aab with scoped rules (`.cta-button.en-content`, `body.lang-en .cta-button.bn-content`, `body.lang-en .cta-button.en-content`) following the existing .nav-links scoping pattern; re-verified interactively (above).
