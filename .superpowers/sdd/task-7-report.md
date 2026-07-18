@@ -97,3 +97,18 @@ $ grep -n 'label {' index.html
 926:            .lang-label { font-size: 0.8rem; }
 ```
 Result: PASS — only `.nav-toggle-label` (line 161, sets `display: none`) could theoretically interfere, but it is for a different element class and cannot re-override `.form-group label`. All other label rules do not set `display`. No conflicts detected.
+
+## Controller final QA (headless Chrome, tmp-dir copies, repo tree untouched)
+
+All 9 checklist items pass at HEAD cefe7d2:
+1. Filters: সব=6, জনসংযোগ=2, বক্তব্য ও সমাবেশ=1, উন্নয়ন ও ত্রাণ=2, সংসদ=1 — every card tag matches its chip.
+2. Load-more: 11 temp entries → 9 initial + visible button; click → 11 cards, button hides.
+3. Lightbox: temp 2nd photo → counter "১ / ২"→"২ / ২", both arrows visible, FB link shown, backdrop click closes (Escape verified in Task 5).
+4. Live Hero: shows 2026-07-10 entry; temp 2026-07-14 entry → hero swaps to it; removed after.
+5. Edge cases: unknown category → অন্যান্য chip + tag; missing photo file (nai.jpg) → no JS error, placeholder path; broken activities.js → 0 cards + "কার্যক্রম লোড করা যাচ্ছে না…" rendered, opinion form + rest of site intact.
+6. BN/EN toggle: instrumented survey across header/hero-identity/stats/about/commitments/videos/opinion/contact/footer — clean in both modes AFTER fix cefe7d2 (pre-fix: 11 visible .en-content in #opinion during BN mode; root cause .form-group label specificity (0,1,1) > .en-content (0,1,0); defect present in pre-redesign baseline 5098e7f).
+7. Mobile: at 500px (headless new-mode minimum viewport; 390px windows render at 500 and crop screenshots) scrollWidth == clientWidth (no horizontal scroll); lightbox modal fits (left 16, right 484) with close button in view. True ≤480px check needs a real device at handoff.
+8. Console: zero errors/console.error across load + all scripted interactions in both QA runs.
+9. node -e activities.length → 6.
+
+Known cosmetic carry-overs (final review triage): intra-element text wrapping in about/qualifications on small screens (pre-existing), duplicate 768px media block, ledger items (a)-(f).

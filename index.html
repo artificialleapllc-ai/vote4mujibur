@@ -861,7 +861,6 @@
         }
 
         @media (max-width: 768px) {
-            body { padding-bottom: 70px; }
             .about-grid { grid-template-columns: 1fr; text-align: center; }
             .profile-img, .profile-placeholder { margin: 0 auto; }
             .lang-switch {
@@ -941,9 +940,6 @@
             }
             .section-title {
                 font-size: 2rem;
-            }
-            .mobile-action-bar {
-                display: flex;
             }
         }
     </style>
@@ -1462,7 +1458,10 @@
                     <h4 class="bn-content">সোশ্যাল মিডিয়া</h4>
                     <h4 class="en-content">Social Media</h4>
                     <p><a href="https://www.facebook.com/ProfMujib.Official" target="_blank">@ProfMujib.Official</a></p>
-                    <p><a href="https://www.facebook.com/mrmedia11/" target="_blank">মিডিয়া সেল</a></p>
+                    <p><a href="https://www.facebook.com/mrmedia11/" target="_blank">
+                        <span class="bn-content">মিডিয়া সেল</span>
+                        <span class="en-content">Media Cell</span>
+                    </a></p>
                 </div>
                 <div class="contact-item">
                     <div class="contact-icon">⚖️</div>
@@ -1527,9 +1526,12 @@
         function normalizeActivity(raw) {
             const r = raw || {};
             const dateStr = String(r.date || '').trim();
-            const isIso = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+            const dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr);
+            const month = dm ? parseInt(dm[2], 10) : 0;
+            const day = dm ? parseInt(dm[3], 10) : 0;
+            const isValid = !!dm && month >= 1 && month <= 12 && day >= 1 && day <= 31;
             return {
-                dateKey: isIso ? dateStr : '0000-00-00',      // invalid dates sort last (list is newest-first)
+                dateKey: isValid ? dateStr : '0000-00-00',      // invalid dates sort last (list is newest-first)
                 dateLabel: formatBanglaDate(dateStr),
                 category: ACTIVITY_CATEGORIES.includes(String(r.category || '').trim())
                     ? String(r.category).trim() : OTHER_CATEGORY,
@@ -1557,12 +1559,17 @@
             box.innerHTML =
                 '<div class="latest-card">' +
                 '<span class="latest-badge">● সর্বশেষ কার্যক্রম</span>' +
-                '<img src="' + photo + '" alt="" onerror="this.onerror=null;this.src=PLACEHOLDER_IMG;">' +
                 '<div class="latest-body"><h3></h3><p class="latest-meta"></p></div></div>';
+            const card = box.querySelector('.latest-card');
+            const img = document.createElement('img');
+            img.src = photo;
+            img.alt = '';
+            img.onerror = function () { this.onerror = null; this.src = PLACEHOLDER_IMG; };
+            card.insertBefore(img, card.querySelector('.latest-body'));
             box.querySelector('h3').textContent = a.title;
             box.querySelector('.latest-meta').textContent = a.category + ' · ' + a.dateLabel;
             box.hidden = false;
-            box.querySelector('.latest-card').addEventListener('click', () => {
+            card.addEventListener('click', () => {
                 document.getElementById('activities')?.scrollIntoView({ behavior: 'smooth' });
             });
         })();
